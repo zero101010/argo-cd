@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: velocityapi
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: velocityapi
+    template:
+        metadata:
+            labels:
+                app: velocityapi
+        spec:
+            containers:
+              - name: velocityapi
+                image: zero101010/velocityapi
+                imagePullPolicy: Always
+                ports:
+                - containerPort: 8080
