@@ -1,0 +1,38 @@
+stages:
+  - test
+  - release
+
+tests:
+  image: python:3.8-alpine
+  stage: test
+  script:
+    - pip install -r SpeedObjectAPI/requirements.txt
+    - python3 SpeedObjectAPI/tests.py 
+
+release:
+  stage: release
+  image: docker:18.09
+  variables:
+    IMAGE: zero101010/velocityapi
+  services:
+    - docker:18.09-dind
+  script:
+    - init_docker
+    - push_docker
+  only:
+    refs:
+      - master
+      
+.functions: &functions |
+  #  Loading Gitlab CI custom functions
+  # Docker settings
+  function init_docker() {
+     docker login -p $DOCKERPASSWORD -u $DOCKERUSER
+  }
+  
+  # Push docker image to dockerHub
+  function push_docker() {
+      docker build -t $IMAGE .
+      docker tag $IMAGE:latest $IMAGE:$CI_COMMIT_SHA
+      docker push $IMAGE
+  }
